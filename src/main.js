@@ -76,8 +76,13 @@ scene.add( ambientLight );
 let pointLight = new THREE.PointLight( 0xffffff, 0.8 );
 camera.add( pointLight );
 
+var stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
+
 function animate() {
     requestAnimationFrame( animate );
+    stats.begin();
     //controls.update();
     camera.position.set(Backfire.position.x , 500, Backfire.position.z + 1600 );
     //Backfire.position.z -= 5;
@@ -94,4 +99,5 @@ function animate() {
     };
     Backfire.position.x += speed.x;
     render();
+    stats.end();
 }
