@@ -1,13 +1,18 @@
+let BackfireMaterials;
+let BackfireObject;
+let Backfire;
+let speed={x:0, y:0, z:0};
+let step=0.1;
+
 /*=============================================
  =                   SCENE                    =
  =============================================*/
-const scene   = new THREE.Scene();
+const scene  = new THREE.Scene();
 
 /*=============================================
  =                   Camera                   =
  =============================================*/
-camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 5000 );
-camera.position.set( 0, 0, 1500 );
+camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 20000 );
 scene.add(camera);
 
 /*=============================================
@@ -18,8 +23,26 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 /*=============================================
- =                   OBJ                      =
+ =                  OBJ  MTL                  =
  =============================================*/
+/*var objLoader = new THREE.OBJLoader();
+objLoader.setPath('./models/');
+objLoader.load('Backfire.obj', function (object) {
+    console.log(object);
+    BackfireObject = object;
+});
+
+var mtlLoader = new THREE.MTLLoader();
+mtlLoader.setPath( './models/' );
+mtlLoader.load( 'Backfire.mtl', function( materials ) {
+    console.log(materials);
+    materials.preload();
+    BackfireMaterials = materials;
+*/
+
+
+
+
 let mtlLoader = new THREE.MTLLoader();
 mtlLoader.setPath( './models/' );
 mtlLoader.load( 'Backfire.mtl', function( materials ) {
@@ -28,34 +51,47 @@ mtlLoader.load( 'Backfire.mtl', function( materials ) {
     loader.setMaterials( materials );
     loader.setPath( './models/' );
     loader.load( 'Backfire.obj', function ( object ) {
-        scene.add( object );
+        Backfire = object;
+        //Backfire.rotateY(1.5);
+        scene.add( Backfire );
+        animate();
     });
 });
+
+//
 
 /*=============================================
  =                   CONTROLS                 =
  =============================================*/
-controls = new THREE.OrbitControls( camera, renderer.domElement );
+/*controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.addEventListener( 'change', render );
-controls.autoRotate = true;
-controls.enableZoom = false;
+//controls.autoRotate = true;
+controls.enableZoom = false;*/
 
 /*=============================================
  =                  Lights                    =
  =============================================*/
-let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+let ambientLight = new THREE.AmbientLight( 0xcccccc, 1 );
 scene.add( ambientLight );
 let pointLight = new THREE.PointLight( 0xffffff, 0.8 );
 camera.add( pointLight );
 
-
 function animate() {
     requestAnimationFrame( animate );
-    controls.update();
-    scene.rotation.y +=0.1;
+    //controls.update();
+    camera.position.set(Backfire.position.x , 500, Backfire.position.z + 1600 );
+    //Backfire.position.z -= 5;
+    document.addEventListener("keydown", onDocumentKeyDown, false);
+    function onDocumentKeyDown(event) {
+        var keyCode = event.which;
+        if (keyCode == 39) {
+            speed.x += step;
+            //Backfire.position.x += 0.15;
+        } else if (keyCode == 37) {
+            speed.x -= step;
+            //Backfire.position.x -= 0.15;
+        }
+    };
+    Backfire.position.x += speed.x;
     render();
 }
-
-function render() {renderer.render( scene, camera );}
-
-animate();
