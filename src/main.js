@@ -1,13 +1,20 @@
 let BackfireMaterials;
 let BackfireObject;
 let Backfire;
+let backgroundMesh;
+let backgroundScene;
+let backgroundCamera;
 let speed={x:0, y:0, z:0};
-let step=0.1;
+let step=0.001;
+//let keyboard = new THREEx.KeyboardState();
+let clock = new THREE.Clock();
 
 /*=============================================
  =                   SCENE                    =
  =============================================*/
 const scene  = new THREE.Scene();
+var loader = new THREE.ImageLoader();
+scene.background = new THREE.Color( 0xffff00 );
 
 /*=============================================
  =                   Camera                   =
@@ -45,14 +52,15 @@ mtlLoader.load( 'Backfire.mtl', function( materials ) {
 
 let mtlLoader = new THREE.MTLLoader();
 mtlLoader.setPath( './models/' );
-mtlLoader.load( 'Backfire.mtl', function( materials ) {
+mtlLoader.load( 'Avent.mtl', function( materials ) {
     materials.preload();
     let loader = new THREE.OBJLoader();
     loader.setMaterials( materials );
     loader.setPath( './models/' );
-    loader.load( 'Backfire.obj', function ( object ) {
+    loader.load( 'Avent.obj', function ( object ) {
         Backfire = object;
-        //Backfire.rotateY(1.5);
+        Backfire.rotateY(10);
+        Backfire.scale.set(250,250,250);
         scene.add( Backfire );
         animate();
     });
@@ -80,24 +88,32 @@ var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
 
+function movement() {
+    Backfire.position.x += speed.x;
+    speed.x -= speed.x * 0.01;
+    Backfire.rotation.y = - speed.x * 0.03;
+}
+    
+
 function animate() {
     requestAnimationFrame( animate );
     stats.begin();
+    //keyboard.update();
     //controls.update();
     camera.position.set(Backfire.position.x , 500, Backfire.position.z + 1600 );
     //Backfire.position.z -= 5;
     document.addEventListener("keydown", onDocumentKeyDown, false);
     function onDocumentKeyDown(event) {
         var keyCode = event.which;
-        if (keyCode == 39) {
-            speed.x += step;
-            //Backfire.position.x += 0.15;
-        } else if (keyCode == 37) {
+        if (keyCode == 37) {
             speed.x -= step;
-            //Backfire.position.x -= 0.15;
+            Backfire.position.x += 0.15;
+        } else if (keyCode == 39) {
+            speed.x += step;
+            Backfire.position.x -= 0.15;
         }
     };
-    Backfire.position.x += speed.x;
+    //movement();    
     render();
     stats.end();
 }
